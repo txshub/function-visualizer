@@ -3,7 +3,7 @@ import { Paper, TextField, IconButton, Box } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { FunctionDefinition } from './LeftPanel';
 import ColorSelector from './ColorSelector';
-import FunctionDefinitionComponent from './FunctionDefinition';
+import FunctionDefinitionComponent from './functionDefinition/FunctionDefinition';
 
 interface FunctionPanelProps {
   function: FunctionDefinition;
