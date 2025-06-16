@@ -1,101 +1,72 @@
-import React, { useState } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Container,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Box,
-  Paper,
-  Stack,
-} from '@mui/material';
-import { Functions as FunctionsIcon } from '@mui/icons-material';
+import React, { useState, useCallback } from 'react';
+import { AppBar, Toolbar, Typography, Container, Box } from '@mui/material';
+import FunctionIcon from './components/FunctionIcon';
+import LeftPanel, { FunctionDefinition } from './components/LeftPanel';
+import RightPanel from './components/RightPanel';
 
 function App() {
-  const [functionInput, setFunctionInput] = useState('');
-  const [results, setResults] = useState<string[]>([]);
+  const [functions, setFunctions] = useState<FunctionDefinition[]>([
+    {
+      id: '1',
+      title: 'Function 1',
+      color: '1976d2',
+      definition: 'x',
+      coefficients: {},
+    },
+  ]);
 
-  const handleVisualize = () => {
-    // Placeholder function - will be implemented later
-    setResults([
-      `Function: ${functionInput}`,
-      'Analysis: Ready for implementation',
-      'Visualization: Coming soon...',
-    ]);
-  };
+  const addFunction = useCallback(() => {
+    const newFunction: FunctionDefinition = {
+      id: Date.now().toString(),
+      title: `Function ${functions.length + 1}`,
+      color: '1976d2',
+      definition: 'x',
+      coefficients: {},
+    };
+    setFunctions((prev) => [...prev, newFunction]);
+  }, [functions.length]);
+
+  const removeFunction = useCallback((id: string) => {
+    setFunctions((prev) => prev.filter((func) => func.id !== id));
+  }, []);
+
+  const updateFunction = useCallback(
+    (id: string, updates: Partial<FunctionDefinition>) => {
+      setFunctions((prev) =>
+        prev.map((func) => (func.id === id ? { ...func, ...updates } : func))
+      );
+    },
+    []
+  );
 
   return (
     <div className="App">
       <AppBar position="static" elevation={2}>
         <Toolbar>
-          <FunctionsIcon sx={{ mr: 2 }} />
+          <FunctionIcon sx={{ mr: 2 }} />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Function Visualizer
           </Typography>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Stack spacing={3}>
-          <Card elevation={3}>
-            <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Function Input
-              </Typography>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                variant="outlined"
-                label="Enter your function here"
-                placeholder="e.g., function add(a, b) { return a + b; }"
-                value={functionInput}
-                onChange={(e) => setFunctionInput(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleVisualize}
-                disabled={!functionInput.trim()}
-                startIcon={<FunctionsIcon />}
-              >
-                Visualize Function
-              </Button>
-            </CardContent>
-          </Card>
-
-          {results.length > 0 && (
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h5" gutterBottom>
-                Analysis Results
-              </Typography>
-              {results.map((result, index) => (
-                <Box key={index} sx={{ mb: 1 }}>
-                  <Typography variant="body1" color="text.secondary">
-                    {result}
-                  </Typography>
-                </Box>
-              ))}
-            </Paper>
-          )}
-
-          <Card elevation={1}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Welcome to Function Visualizer
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                This tool helps you visualize and analyze functions. Enter a
-                function in the input area above to get started. More features
-                will be added as the project develops.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Stack>
+      <Container
+        maxWidth="xl"
+        sx={{ mt: 2, mb: 2, height: 'calc(100vh - 100px)' }}
+      >
+        <Box sx={{ display: 'flex', height: '100%', gap: 2 }}>
+          <Box sx={{ flex: 1 }}>
+            <LeftPanel
+              functions={functions}
+              onAddFunction={addFunction}
+              onUpdateFunction={updateFunction}
+              onRemoveFunction={removeFunction}
+            />
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            <RightPanel functions={functions} />
+          </Box>
+        </Box>
       </Container>
     </div>
   );
